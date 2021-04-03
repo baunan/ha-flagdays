@@ -1,8 +1,8 @@
 {
-    "domain": "birthdays",
-    "name": "Birthdays",
-    "documentation": "https://github.com/Miicroo/ha-birthdays",
+    "domain": "flagdays",
+    "name": "Flagdays",
+    "documentation": "https://github.com/baunan/ha-flagdays",
     "dependencies": [],
-    "codeowners": ["@Miicroo"],
+    "codeowners": ["@baunan"],
     "requirements": []
 }
