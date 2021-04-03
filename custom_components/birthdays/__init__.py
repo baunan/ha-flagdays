@@ -14,14 +14,14 @@ from homeassistant.util import slugify
 _LOGGER = logging.getLogger(__name__)
 
 CONF_NAME = 'name'
-CONF_DATE_OF_BIRTH = 'date_of_birth'
+CONF_DATE_OF_FLAG = 'date_of_flag'
 CONF_ICON = 'icon'
-DOMAIN = 'birthdays'
+DOMAIN = 'flagdays'
 
 BIRTHDAY_CONFIG_SCHEMA = vol.Schema({
     vol.Required(CONF_NAME): cv.string,
-    vol.Required(CONF_DATE_OF_BIRTH): cv.date,
-    vol.Optional(CONF_ICON, default='mdi:cake'): cv.string,
+    vol.Required(CONF_DATE_OF_FLAG): cv.date,
+    vol.Optional(CONF_ICON, default='mdi:flag-outline'): cv.string,
 })
 
 CONFIG_SCHEMA = vol.Schema({
@@ -32,11 +32,11 @@ async def async_setup(hass, config):
 
     devices = []
 
-    for birthday_data in config[DOMAIN]:
-        name = birthday_data[CONF_NAME]
-        date_of_birth = birthday_data[CONF_DATE_OF_BIRTH]
-        icon = birthday_data[CONF_ICON]
-        devices.append(BirthdayEntity(name, date_of_birth, icon, hass))
+    for flagday_data in config[DOMAIN]:
+        name = flagday_data[CONF_NAME]
+        date_of_flag = flagday_data[CONF_DATE_OF_FLAG]
+        icon = flagday_data[CONF_ICON]
+        devices.append(FlagdayEntity(name, date_of_flag, icon, hass))
 
     component = EntityComponent(_LOGGER, DOMAIN, hass)
     await component.async_add_entities(devices)
@@ -48,16 +48,16 @@ async def async_setup(hass, config):
     return True
 
 
-class BirthdayEntity(Entity):
+class FlagdayEntity(Entity):
 
-    def __init__(self, name, date_of_birth, icon, hass):
+    def __init__(self, name, date_of_flag, icon, hass):
         self._name = name
-        self._date_of_birth = date_of_birth
+        self._date_of_flag = date_of_flag
         self._icon = icon
-        self._age_at_next_birthday = 0
+        self._age_at_next_flagday = 0
         self._state = None
         name_in_entity_id = slugify(name)
-        self.entity_id = 'birthday.{}'.format(name_in_entity_id)
+        self.entity_id = 'flagday.{}'.format(name_in_entity_id)
         self.hass = hass
 
     @property
@@ -66,7 +66,7 @@ class BirthdayEntity(Entity):
 
     @property
     def unique_id(self):
-        return '{}.{}'.format(self.entity_id, slugify(self._date_of_birth.strftime("%Y%m%d")))
+        return '{}.{}'.format(self.entity_id, slugify(self._date_of_flag.strftime("%Y%m%d")))
 
     @property
     def state(self):
@@ -84,8 +84,8 @@ class BirthdayEntity(Entity):
     @property
     def device_state_attributes(self):
         return {
-            CONF_DATE_OF_BIRTH: str(self._date_of_birth),
-            'age_at_next_birthday': self._age_at_next_birthday,
+            CONF_DATE_OF_FLAG: str(self._date_of_flag),
+            'age_at_next_flagday': self._age_at_next_flagday,
         }
 
     @property
@@ -108,19 +108,19 @@ class BirthdayEntity(Entity):
         from datetime import date, timedelta
 
         today = dt_util.start_of_local_day().date()
-        next_birthday = date(today.year, self._date_of_birth.month, self._date_of_birth.day)
+        next_flagday = date(today.year, self._date_of_flag.month, self._date_of_flag.day)
 
-        if next_birthday < today:
-            next_birthday = next_birthday.replace(year=today.year + 1)
+        if next_flagday < today:
+            next_flagday = next_flagday.replace(year=today.year + 1)
 
-        days_until_next_birthday = (next_birthday-today).days
+        days_until_next_flagday = (next_flagday-today).days
 
-        self._age_at_next_birthday = next_birthday.year - self._date_of_birth.year
-        self._state = days_until_next_birthday
+        self._age_at_next_flagday = next_flagday.year - self._date_of_flag.year
+        self._state = days_until_next_flagday
 
-        if days_until_next_birthday == 0:
-            # Fire event if birthday is today
-            self.hass.bus.async_fire(event_type='birthday', event_data={'name': self._name, 'age': self._age_at_next_birthday})
+        if days_until_next_flagday == 0:
+            # Fire event if flagday is today
+            self.hass.bus.async_fire(event_type='flagday', event_data={'name': self._name, 'age': self._age_at_next_flagday})
 
         await self.async_update_ha_state()
         async_call_later(self.hass, self._get_seconds_until_midnight(), self.update_data)
