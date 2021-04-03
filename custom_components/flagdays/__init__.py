@@ -18,14 +18,14 @@ CONF_DATE_OF_FLAG = 'date_of_flag'
 CONF_ICON = 'icon'
 DOMAIN = 'flagdays'
 
-BIRTHDAY_CONFIG_SCHEMA = vol.Schema({
+FLAGDAY_CONFIG_SCHEMA = vol.Schema({
     vol.Required(CONF_NAME): cv.string,
     vol.Required(CONF_DATE_OF_FLAG): cv.date,
     vol.Optional(CONF_ICON, default='mdi:flag-outline'): cv.string,
 })
 
 CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.All(cv.ensure_list, [BIRTHDAY_CONFIG_SCHEMA])
+    DOMAIN: vol.All(cv.ensure_list, [FLAGDAY_CONFIG_SCHEMA])
 }, extra=vol.ALLOW_EXTRA)
 
 async def async_setup(hass, config):
@@ -66,7 +66,7 @@ class FlagdayEntity(Entity):
 
     @property
     def unique_id(self):
-        return '{}.{}'.format(self.entity_id, slugify(self._date_of_flag.strftime("%Y%m%d")))
+        return '{}.{}'.format(self.entity_id, slugify(self._date_of_flag.strftime("%m%d")))
 
     @property
     def state(self):
