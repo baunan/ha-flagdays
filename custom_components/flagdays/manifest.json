@@ -4,5 +4,6 @@
     "documentation": "https://github.com/baunan/ha-flagdays",
     "dependencies": [],
     "codeowners": ["@baunan"],
-    "requirements": []
+    "requirements": [],
+    "version": "v1.0.1"
 }
