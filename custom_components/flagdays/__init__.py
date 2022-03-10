@@ -82,7 +82,7 @@ class FlagdayEntity(Entity):
         return self._icon
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {
             CONF_DATE_OF_FLAG: str(self._date_of_flag),
             'age_at_next_flagday': self._age_at_next_flagday,
